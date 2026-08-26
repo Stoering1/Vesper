@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Vesper",
+      "hasCanvas": false,
+      "bodyTextLen": 92,
+      "bodyTextHash": "401340f77a68279de94501bd5eb4e1cd07756a23fbf2c3af22a8b71cefa558d5",
+      "bodyTextPrefix": "Vesper Gasthaus Lindenhof MITARBEITER-PIN Demo: 1111 Anna · 0000",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Vesper",
+      "hasCanvas": false,
+      "bodyTextLen": 92,
+      "bodyTextHash": "401340f77a68279de94501bd5eb4e1cd07756a23fbf2c3af22a8b71cefa558d5",
+      "bodyTextPrefix": "Vesper Gasthaus Lindenhof MITARBEITER-PIN Demo: 1111 Anna · 0000",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
