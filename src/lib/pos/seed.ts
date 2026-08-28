@@ -137,6 +137,14 @@ export const SETTINGS: PosSettings = {
   happyHourEnd: "19:00",
   nextBonNumber: 1847,
   tseCounter: 1846,
+  sumup: {
+    mode: "demo",
+    merchantCode: "",
+    apiKey: "",
+    readerId: "rdr_demo_vesper_theke",
+    readerName: "Theke Solo",
+    readerModel: "solo",
+  },
 };
 
 function item(

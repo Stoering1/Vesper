@@ -205,6 +205,16 @@ var ChartColumn = createLucideIcon("chart-column", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var Check = createLucideIcon("check", [["path", {
+	d: "M20 6 9 17l-5-5",
+	key: "1gmf2c"
+}]]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var ChefHat = createLucideIcon("chef-hat", [["path", {
 	d: "M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z",
 	key: "1qvrer"
@@ -235,6 +245,40 @@ var ClipboardCheck = createLucideIcon("clipboard-check", [
 	["path", {
 		d: "m9 14 2 2 4-4",
 		key: "df797q"
+	}]
+]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Contact = createLucideIcon("contact", [
+	["path", {
+		d: "M16 2v2",
+		key: "scm5qe"
+	}],
+	["path", {
+		d: "M7 22v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2",
+		key: "1waht3"
+	}],
+	["path", {
+		d: "M8 2v2",
+		key: "pbkmx"
+	}],
+	["circle", {
+		cx: "12",
+		cy: "11",
+		r: "3",
+		key: "itu57m"
+	}],
+	["rect", {
+		x: "3",
+		y: "4",
+		width: "18",
+		height: "18",
+		rx: "2",
+		key: "12vinp"
 	}]
 ]);
 /**
@@ -277,6 +321,45 @@ var Delete = createLucideIcon("delete", [
 		key: "1fp51s"
 	}]
 ]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var EyeOff = createLucideIcon("eye-off", [
+	["path", {
+		d: "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",
+		key: "ct8e1f"
+	}],
+	["path", {
+		d: "M14.084 14.158a3 3 0 0 1-4.242-4.242",
+		key: "151rxh"
+	}],
+	["path", {
+		d: "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",
+		key: "13bj9a"
+	}],
+	["path", {
+		d: "m2 2 20 20",
+		key: "1ooewy"
+	}]
+]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Eye = createLucideIcon("eye", [["path", {
+	d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+	key: "1nclc0"
+}], ["circle", {
+	cx: "12",
+	cy: "12",
+	r: "3",
+	key: "1v7zrd"
+}]]);
 /**
 * @license lucide-react v0.510.0 - ISC
 *
@@ -395,6 +478,30 @@ var Minus = createLucideIcon("minus", [["path", {
 	d: "M5 12h14",
 	key: "1ays0h"
 }]]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
+var Nfc = createLucideIcon("nfc", [
+	["path", {
+		d: "M6 8.32a7.43 7.43 0 0 1 0 7.36",
+		key: "9iaqei"
+	}],
+	["path", {
+		d: "M9.46 6.21a11.76 11.76 0 0 1 0 11.58",
+		key: "1yha7l"
+	}],
+	["path", {
+		d: "M12.91 4.1a15.91 15.91 0 0 1 .01 15.8",
+		key: "4iu2gk"
+	}],
+	["path", {
+		d: "M16.37 2a20.16 20.16 0 0 1 0 20",
+		key: "sap9u2"
+	}]
+]);
 /**
 * @license lucide-react v0.510.0 - ISC
 *
@@ -612,6 +719,38 @@ var TriangleAlert = createLucideIcon("triangle-alert", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var Unplug = createLucideIcon("unplug", [
+	["path", {
+		d: "m19 5 3-3",
+		key: "yk6iyv"
+	}],
+	["path", {
+		d: "m2 22 3-3",
+		key: "19mgm9"
+	}],
+	["path", {
+		d: "M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z",
+		key: "goz73y"
+	}],
+	["path", {
+		d: "M7.5 13.5 10 11",
+		key: "7xgeeb"
+	}],
+	["path", {
+		d: "M10.5 16.5 13 14",
+		key: "10btkg"
+	}],
+	["path", {
+		d: "m12 6 6 6 2.3-2.3a2.4 2.4 0 0 0 0-3.4l-2.6-2.6a2.4 2.4 0 0 0-3.4 0Z",
+		key: "1snsnr"
+	}]
+]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var Users = createLucideIcon("users", [
 	["path", {
 		d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2",
@@ -662,6 +801,30 @@ var UtensilsCrossed = createLucideIcon("utensils-crossed", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var Wifi = createLucideIcon("wifi", [
+	["path", {
+		d: "M12 20h.01",
+		key: "zekei9"
+	}],
+	["path", {
+		d: "M2 8.82a15 15 0 0 1 20 0",
+		key: "dnpr2z"
+	}],
+	["path", {
+		d: "M5 12.859a10 10 0 0 1 14 0",
+		key: "1x1e6c"
+	}],
+	["path", {
+		d: "M8.5 16.429a5 5 0 0 1 7 0",
+		key: "1bycff"
+	}]
+]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var X = createLucideIcon("x", [["path", {
 	d: "M18 6 6 18",
 	key: "1bl5f8"
@@ -670,4 +833,4 @@ var X = createLucideIcon("x", [["path", {
 	key: "d8bk6v"
 }]]);
 //#endregion
-export { ChefHat as C, Ban as D, Banknote as E, ArrowRightLeft as O, ClipboardCheck as S, CalendarClock as T, Lock as _, Trash2 as a, Delete as b, ShoppingBag as c, Printer as d, Plus as f, Menu as g, Merge as h, TriangleAlert as i, Settings as l, Minus as m, UtensilsCrossed as n, StickyNote as o, Package as p, Users as r, Split as s, X as t, ReceiptText as u, LoaderCircle as v, ChartColumn as w, CreditCard as x, LayoutGrid as y };
+export { Check as A, Eye as C, Contact as D, CreditCard as E, ArrowRightLeft as F, CalendarClock as M, Banknote as N, ClipboardCheck as O, Ban as P, LayoutGrid as S, Delete as T, Minus as _, Unplug as a, Lock as b, StickyNote as c, Settings as d, ReceiptText as f, Nfc as g, Package as h, Users as i, ChartColumn as j, ChefHat as k, Split as l, Plus as m, Wifi as n, TriangleAlert as o, Printer as p, UtensilsCrossed as r, Trash2 as s, X as t, ShoppingBag as u, Merge as v, EyeOff as w, LoaderCircle as x, Menu as y };

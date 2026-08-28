@@ -108,10 +108,20 @@ export function ReceiptModal({
           })}
           {s.payments.map((p, i) => (
             <div key={i} className="flex justify-between">
-              <span>{METHOD_LABEL[p.method]}</span>
+              <span>
+                {METHOD_LABEL[p.method]}
+                {p.method === "karte" && p.cardBrand
+                  ? ` ${p.cardBrand}${p.cardLast4 ? ` •••• ${p.cardLast4}` : ""}`
+                  : ""}
+              </span>
               <span>{formatEUR(p.amountCents)}</span>
             </div>
           ))}
+          {s.payments.some((p) => p.readerName) ? (
+            <p className="text-[11px] text-accent-fg/70">
+              Terminal {s.payments.find((p) => p.readerName)?.readerName}
+            </p>
+          ) : null}
           <p className="my-2">--------------------------------</p>
           <p className="text-[10px] leading-snug">
             TSE-Seriennr. {receipt.tse.serial}

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { CreditCard, Banknote, Loader2 } from "lucide-react";
+import { CreditCard, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { formatEUR, parseEuroInput } from "@/lib/pos/money";
 import { checkDue, checkTotal, usePosStore } from "@/lib/pos/store";
-import type { Check, PayMethod, Receipt } from "@/lib/pos/types";
+import { DEFAULT_SUMUP, withSumupSettings, type Check, type PayMethod, type Receipt } from "@/lib/pos/types";
+import { isSumupLiveReady, type TerminalResult } from "@/lib/pos/sumup";
+import { SumupTerminal } from "@/components/pos/sumup-terminal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,25 +30,30 @@ export function PaymentFlow({
   onPaid: (r: Receipt) => void;
 }) {
   const pay = usePosStore((s) => s.pay);
+  const rawSettings = usePosStore((s) => s.settings);
+  const settings = withSumupSettings(rawSettings).sumup;
   const [method, setMethod] = useState<PayMethod>("bar");
   const [received, setReceived] = useState("");
   const [tipPct, setTipPct] = useState(0);
-  const [cardWait, setCardWait] = useState(false);
   const [splitCard, setSplitCard] = useState("");
+  const [terminalOn, setTerminalOn] = useState(false);
+  const [cardAmount, setCardAmount] = useState(0);
 
   const sub = checkTotal({ ...check, tipCents: 0 });
   const tip = Math.round((sub * tipPct) / 100);
   const total = sub + tip;
   const rec = parseEuroInput(received) || total;
   const change = method === "bar" ? rec - total : 0;
+  const live = isSumupLiveReady(settings);
 
   useEffect(() => {
     if (open) {
       setReceived("");
       setTipPct(0);
       setMethod("bar");
-      setCardWait(false);
       setSplitCard("");
+      setTerminalOn(false);
+      setCardAmount(0);
     }
   }, [open, check.id]);
 
@@ -60,7 +67,17 @@ export function PaymentFlow({
     setReceived((v) => (k === "," && v.includes(",") ? v : v + k));
   }
 
-  function finish(payments: { method: PayMethod; amountCents: number; receivedCents: number }[]) {
+  function finish(
+    payments: {
+      method: PayMethod;
+      amountCents: number;
+      receivedCents: number;
+      cardBrand?: string;
+      cardLast4?: string;
+      sumupTxId?: string;
+      readerName?: string;
+    }[],
+  ) {
     const receipt = pay(check.id, payments, tip);
     if (receipt) {
       toast.success("Bezahlt");
@@ -78,12 +95,13 @@ export function PaymentFlow({
     finish([{ method: "bar", amountCents: total, receivedCents: rec }]);
   }
 
-  function payCard() {
-    setCardWait(true);
-    window.setTimeout(() => {
-      setCardWait(false);
-      finish([{ method: "karte", amountCents: total, receivedCents: total }]);
-    }, 1100);
+  function startCard(amount: number) {
+    if (amount <= 0) {
+      toast.error("Kartenbetrag muss größer als 0 sein");
+      return;
+    }
+    setCardAmount(amount);
+    setTerminalOn(true);
   }
 
   function payMixed() {
@@ -92,15 +110,46 @@ export function PaymentFlow({
       toast.error("Kartenanteil muss zwischen 0 und Gesamt liegen");
       return;
     }
-    const cash = total - card;
-    finish([
-      { method: "karte", amountCents: card, receivedCents: card },
-      { method: "bar", amountCents: cash, receivedCents: cash },
-    ]);
+    startCard(card);
   }
 
+  function onTerminalDone(result: TerminalResult) {
+    setTerminalOn(false);
+    if (result.status === "successful") {
+      const cardPay = {
+        method: "karte" as const,
+        amountCents: cardAmount,
+        receivedCents: cardAmount,
+        cardBrand: result.cardBrand,
+        cardLast4: result.cardLast4,
+        sumupTxId: result.sumupTxId,
+        readerName: result.readerName ?? settings.readerName,
+      };
+      if (cardAmount < total) {
+        const cash = total - cardAmount;
+        finish([cardPay, { method: "bar", amountCents: cash, receivedCents: cash }]);
+      } else {
+        finish([cardPay]);
+      }
+      return;
+    }
+    if (result.status === "cancelled") {
+      toast.message("Kartenzahlung abgebrochen");
+      return;
+    }
+    toast.error(result.error ?? "Kartenzahlung fehlgeschlagen");
+  }
+
+  const tableHint = check.tableId ? `Tischzahlung` : "Theke";
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && terminalOn) return;
+        onOpenChange(next);
+      }}
+    >
       <DialogContent className="w-[min(96vw,640px)]">
         <DialogHeader>
           <DialogTitle>Zahlung</DialogTitle>
@@ -116,7 +165,13 @@ export function PaymentFlow({
           </div>
           <div className="flex gap-1">
             {[0, 5, 10].map((p) => (
-              <Button key={p} size="sm" variant={tipPct === p ? "default" : "outline"} onClick={() => setTipPct(p)}>
+              <Button
+                key={p}
+                size="sm"
+                variant={tipPct === p ? "default" : "outline"}
+                disabled={terminalOn}
+                onClick={() => setTipPct(p)}
+              >
                 {p === 0 ? "ohne Trinkgeld" : `${p} %`}
               </Button>
             ))}
@@ -124,11 +179,19 @@ export function PaymentFlow({
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Button variant={method === "bar" ? "sage" : "outline"} onClick={() => setMethod("bar")}>
+          <Button
+            variant={method === "bar" ? "sage" : "outline"}
+            disabled={terminalOn}
+            onClick={() => setMethod("bar")}
+          >
             <Banknote className="size-4" />
             Bar
           </Button>
-          <Button variant={method === "karte" ? "sage" : "outline"} onClick={() => setMethod("karte")}>
+          <Button
+            variant={method === "karte" ? "sage" : "outline"}
+            disabled={terminalOn}
+            onClick={() => setMethod("karte")}
+          >
             <CreditCard className="size-4" />
             Karte
           </Button>
@@ -153,7 +216,12 @@ export function PaymentFlow({
               </div>
               <div className="mt-2 flex flex-wrap gap-1">
                 {[500, 1000, 2000, 5000, 10000].map((c) => (
-                  <Button key={c} size="sm" variant="outline" onClick={() => setReceived((c / 100).toFixed(2).replace(".", ","))}>
+                  <Button
+                    key={c}
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setReceived((c / 100).toFixed(2).replace(".", ","))}
+                  >
                     {formatEUR(c)}
                   </Button>
                 ))}
@@ -173,28 +241,39 @@ export function PaymentFlow({
           </div>
         ) : (
           <div className="mt-4 space-y-3">
-            <div className="rounded-lg border border-border bg-bg p-4">
-              <p className="text-sm text-muted">Kartenterminal (Demo)</p>
-              <p className="mt-1 text-sm">Kontaktlos oder Chip — Betrag {formatEUR(total)}</p>
-            </div>
-            <div>
-              <Label>Oder gemischt: Kartenanteil</Label>
-              <Input
-                className="mt-1 font-mono"
-                placeholder="z. B. 20,00"
-                value={splitCard}
-                onChange={(e) => setSplitCard(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button className="flex-1" size="lg" onClick={payCard} disabled={cardWait}>
-                {cardWait ? <Loader2 className="size-4 animate-spin" /> : <CreditCard className="size-4" />}
-                {cardWait ? "Bitte Karte auflegen…" : "Karte kassieren"}
-              </Button>
-              <Button variant="outline" size="lg" onClick={payMixed} disabled={!splitCard}>
-                Gemischt
-              </Button>
-            </div>
+            <SumupTerminal
+              amountCents={terminalOn ? cardAmount : total}
+              description={`${rawSettings.restaurantName} · ${tableHint}`}
+              settings={settings.readerName ? settings : { ...DEFAULT_SUMUP, ...settings }}
+              running={terminalOn}
+              onFinished={onTerminalDone}
+              onCancel={() => {
+                setTerminalOn(false);
+                toast.message("Kartenzahlung abgebrochen");
+              }}
+            />
+            {!terminalOn ? (
+              <>
+                <div>
+                  <Label>Oder gemischt: Kartenanteil</Label>
+                  <Input
+                    className="mt-1 font-mono"
+                    placeholder="z. B. 20,00"
+                    value={splitCard}
+                    onChange={(e) => setSplitCard(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1" size="lg" onClick={() => startCard(total)}>
+                    <CreditCard className="size-4" />
+                    {live ? "An SumUp senden" : "Karte kassieren"}
+                  </Button>
+                  <Button variant="outline" size="lg" onClick={payMixed} disabled={!splitCard}>
+                    Gemischt
+                  </Button>
+                </div>
+              </>
+            ) : null}
           </div>
         )}
       </DialogContent>

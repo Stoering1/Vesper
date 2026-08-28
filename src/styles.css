@@ -76,6 +76,22 @@
   }
 }
 
+.vesper-nfc-ring {
+  animation: vesper-nfc 1.6s ease-in-out infinite;
+}
+
+@keyframes vesper-nfc {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.86);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

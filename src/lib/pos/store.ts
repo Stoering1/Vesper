@@ -19,7 +19,7 @@ import type {
   Staff,
   TicketStatus,
 } from "./types";
-import { COURSE_ORDER } from "./types";
+import { COURSE_ORDER, DEFAULT_SUMUP, withSumupSettings } from "./types";
 import { createSeedState, nid } from "./seed";
 import { isHappyHour, netFromGross, taxFromGross, todayKey } from "./money";
 import { signTse } from "./tse";
@@ -68,7 +68,15 @@ interface PosState extends PosData {
   splitItems: (checkId: string, itemIds: string[]) => string | null;
   pay: (
     checkId: string,
-    payments: { method: PayMethod; amountCents: number; receivedCents: number }[],
+    payments: {
+      method: PayMethod;
+      amountCents: number;
+      receivedCents: number;
+      cardBrand?: string;
+      cardLast4?: string;
+      sumupTxId?: string;
+      readerName?: string;
+    }[],
     tipCents: number,
   ) => Receipt | null;
   voidCheck: (checkId: string, reason: string) => Receipt | null;
@@ -82,7 +90,7 @@ interface PosState extends PosData {
   upsertReservation: (r: Reservation) => void;
   setReservationStatus: (id: string, status: ReservationStatus, tableId?: string | null) => void;
   closeDay: (countedCash: number) => DayClose | null;
-  updateSettings: (patch: Partial<PosSettings>) => void;
+  updateSettings: (patch: Partial<Omit<PosSettings, "sumup">> & { sumup?: Partial<PosSettings["sumup"]> }) => void;
   upsertTable: (t: FloorTable) => void;
   resetDemo: () => void;
 }
@@ -196,7 +204,13 @@ function snapshotCheck(
     discountCents: check.discountCents,
     discountLabel: check.discountLabel,
     tipCents: check.tipCents,
-    payments: check.payments.map((p) => ({ method: p.method, amountCents: p.amountCents })),
+    payments: check.payments.map((p) => ({
+      method: p.method,
+      amountCents: p.amountCents,
+      cardBrand: p.cardBrand,
+      cardLast4: p.cardLast4,
+      readerName: p.readerName,
+    })),
     type: check.type,
   };
 }
@@ -542,6 +556,10 @@ export const usePosStore = create<PosState>()(
               receivedCents: p.receivedCents,
               at: Date.now(),
               staffId,
+              cardBrand: p.cardBrand,
+              cardLast4: p.cardLast4,
+              sumupTxId: p.sumupTxId,
+              readerName: p.readerName,
             })),
           ],
         };
@@ -778,7 +796,13 @@ export const usePosStore = create<PosState>()(
         return close;
       },
       updateSettings: (patch) =>
-        set({ settings: { ...get().settings, ...patch } }),
+        set({
+          settings: withSumupSettings({
+            ...get().settings,
+            ...patch,
+            sumup: { ...DEFAULT_SUMUP, ...get().settings.sumup, ...patch.sumup },
+          }),
+        }),
       upsertTable: (t) => {
         const exists = get().tables.some((x) => x.id === t.id);
         set({
@@ -794,6 +818,23 @@ export const usePosStore = create<PosState>()(
       name: "vesper-pos-v1",
       storage: createJSONStorage(() => localStorage),
       skipHydration: true,
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<PosData>;
+        const settings = withSumupSettings({
+          ...current.settings,
+          ...p.settings,
+          sumup: {
+            ...DEFAULT_SUMUP,
+            ...current.settings.sumup,
+            ...p.settings?.sumup,
+          },
+        });
+        return {
+          ...current,
+          ...p,
+          settings,
+        };
+      },
       partialize: (s) => ({
         rooms: s.rooms,
         tables: s.tables,

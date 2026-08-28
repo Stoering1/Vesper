@@ -1,1 +1,0 @@
-var e={sofort:`Sofort`,vorspeise:`Vorspeise`,hauptgang:`Hauptgang`,dessert:`Dessert`,getraenk:`Getränk`},t={kueche:`Küche`,bar:`Bar`,theke:`Theke`},n={inhaber:`Inhaber`,service:`Service`,bar:`Bar`,kueche:`Küche`},r={bar:`Bar`,karte:`Karte`},i=[`vorspeise`,`hauptgang`,`dessert`,`getraenk`,`sofort`];export{t as a,n as i,i as n,r,e as t};

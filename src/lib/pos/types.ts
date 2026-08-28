@@ -8,6 +8,7 @@ export type PayMethod = "bar" | "karte";
 export type StaffRole = "inhaber" | "service" | "bar" | "kueche";
 export type TicketStatus = "neu" | "in_arbeit" | "bereit" | "serviert";
 export type ReservationStatus = "erwartet" | "eingetroffen" | "storniert" | "noshow";
+export type SumUpMode = "demo" | "live";
 
 export interface ModifierOption {
   id: string;
@@ -25,8 +26,8 @@ export interface ModifierGroup {
 
 export interface Product {
   id: string;
-  name: string;
   categoryId: string;
+  name: string;
   price: number;
   taxClass: TaxClass;
   station: Station;
@@ -92,6 +93,10 @@ export interface Payment {
   receivedCents: number;
   at: number;
   staffId: string;
+  cardBrand?: string;
+  cardLast4?: string;
+  sumupTxId?: string;
+  readerName?: string;
 }
 
 export interface Check {
@@ -139,6 +144,14 @@ export interface ReceiptLine {
   voided?: boolean;
 }
 
+export interface ReceiptPayment {
+  method: PayMethod;
+  amountCents: number;
+  cardBrand?: string;
+  cardLast4?: string;
+  readerName?: string;
+}
+
 export interface ReceiptSnapshot {
   restaurantName: string;
   address: string;
@@ -150,7 +163,7 @@ export interface ReceiptSnapshot {
   discountCents: number;
   discountLabel: string;
   tipCents: number;
-  payments: { method: PayMethod; amountCents: number }[];
+  payments: ReceiptPayment[];
   type: CheckType;
 }
 
@@ -191,6 +204,15 @@ export interface DayClose {
   tse: TseRecord;
 }
 
+export interface SumUpSettings {
+  mode: SumUpMode;
+  merchantCode: string;
+  apiKey: string;
+  readerId: string;
+  readerName: string;
+  readerModel: string;
+}
+
 export interface PosSettings {
   restaurantName: string;
   address: string;
@@ -201,6 +223,7 @@ export interface PosSettings {
   happyHourEnd: string;
   nextBonNumber: number;
   tseCounter: number;
+  sumup: SumUpSettings;
 }
 
 export const COURSE_LABEL: Record<Course, string> = {
@@ -236,3 +259,19 @@ export const COURSE_ORDER: Course[] = [
   "getraenk",
   "sofort",
 ];
+
+export const DEFAULT_SUMUP: SumUpSettings = {
+  mode: "demo",
+  merchantCode: "",
+  apiKey: "",
+  readerId: "rdr_demo_vesper_theke",
+  readerName: "Theke Solo",
+  readerModel: "solo",
+};
+
+export function withSumupSettings(settings: PosSettings): PosSettings {
+  return {
+    ...settings,
+    sumup: { ...DEFAULT_SUMUP, ...settings.sumup },
+  };
+}
