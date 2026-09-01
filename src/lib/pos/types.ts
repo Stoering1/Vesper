@@ -54,7 +54,8 @@ export interface FloorTable {
   y: number;
   w: number;
   h: number;
-  shape: "rect" | "round";
+  shape: "rect" | "round" | "oval";
+  rotation: number;
 }
 
 export interface Room {
