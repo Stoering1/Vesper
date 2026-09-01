@@ -22,6 +22,7 @@ export function CloseDayView() {
   const sales = paid.reduce((s, c) => s + checkTotal(c), 0);
   const countedCents = parseEuroInput(counted);
   const diff = counted ? countedCents - methods.bar : 0;
+  const openChecks = checks.filter((c) => c.status !== "paid" && c.status !== "voided");
 
   const vat = useMemo(() => {
     const map = new Map<number, { gross: number; tax: number }>();
@@ -51,6 +52,24 @@ export function CloseDayView() {
         ))}
       </div>
 
+      {openChecks.length > 0 ? (
+        <div className="mt-6 rounded-xl border border-amber/40 bg-amber/10 p-4">
+          <p className="font-medium">Schicht kann noch nicht geschlossen werden</p>
+          <p className="mt-1 text-sm text-muted">
+            Es sind noch {openChecks.length} offene Vorgänge vorhanden. Erst alle Rechnungen bezahlen,
+            stornieren oder abschließen.
+          </p>
+          <ul className="mt-3 space-y-1 text-sm">
+            {openChecks.slice(0, 8).map((c) => (
+              <li key={c.id} className="flex justify-between">
+                <span>{c.tableId ? `Tisch ${c.tableId}` : c.type === "takeaway" ? "Mitnahme" : "Theke"}</span>
+                <span className="font-mono">{formatEUR(checkTotal(c))}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <div className="mt-6">
         <Label>Gezählter Kassenbestand (Bar)</Label>
         <Input
@@ -69,7 +88,7 @@ export function CloseDayView() {
       <Button
         className="mt-6 w-full"
         size="lg"
-        disabled={!counted}
+        disabled={!counted || openChecks.length > 0}
         onClick={() => {
           const close = closeDay(countedCents);
           if (close) {
@@ -79,7 +98,7 @@ export function CloseDayView() {
           }
         }}
       >
-        Z-Abschluss erstellen
+        Schicht schließen & Z-Abschluss erstellen
       </Button>
 
       {dayCloses.length > 0 ? (
